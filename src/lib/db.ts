@@ -3,9 +3,9 @@ import mysql from 'mysql2/promise';
 // It is recommended to use environment variables for credentials in production
 const dbConfig = {
   host: '50.6.160.202',
-  user: 'root',
+  user: 'cnbezvte_corpdbuser',
   password: '0msuH,0q-Ogg',
-  database: 'cooperative_db',
+  database: 'cnbezvte_corpdb',
   waitForConnections: true,
   connectionLimit: 10, // Adjust pool size as needed
   queueLimit: 0,
