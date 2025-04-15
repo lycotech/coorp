@@ -1,8 +1,56 @@
 import Image from "next/image";
+import { getDbPool } from "@/lib/db"; // Import DB pool function
+import mysql from 'mysql2/promise'; // Import mysql types
 
-export default function Home() {
+// Function to test DB connection
+async function checkDbConnection(): Promise<{ connected: boolean; error: string | null }> {
+  let connection: mysql.PoolConnection | null = null;
+  try {
+    console.log("Checking DB connection...");
+    const pool = getDbPool();
+    connection = await pool.getConnection();
+    // Simple query to test connection
+    await connection.query('SELECT 1');
+    console.log("DB Connection Successful!");
+    return { connected: true, error: null };
+  } catch (error) {
+    console.error("DB Connection Failed:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return { connected: false, error: errorMessage };
+  } finally {
+    if (connection) {
+      try {
+        connection.release();
+        console.log("DB Connection released.");
+      } catch (releaseError) {
+        console.error("DB Release Error:", releaseError);
+      }
+    }
+  }
+}
+
+// Make the component async to perform server-side actions
+export default async function Home() {
+
+  // Check DB connection status on the server when the page loads
+  const dbStatus = await checkDbConnection();
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      {/* Header/Status Area */}
+      <div className="w-full flex justify-center items-center mb-4 p-4 border-b">
+        <h2 className="text-lg font-semibold mr-4">Database Connection Status:</h2>
+        {dbStatus.connected ? (
+          <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">Connected</span>
+        ) : (
+          <span className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-sm font-medium">Failed</span>
+        )}
+        {dbStatus.error && (
+           <p className="ml-4 text-red-600 text-xs">Error: {dbStatus.error}</p>
+        )}
+      </div>
+
+      {/* Original Main Content */}
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
