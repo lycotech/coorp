@@ -1,11 +1,13 @@
 import mysql from 'mysql2/promise';
 
 // It is recommended to use environment variables for credentials in production
+// Read database configuration from environment variables
 const dbConfig = {
-  host: 'gator4410.hostgator.com',
-  user: 'cnbezvte_corpdbuser',
-  password: '0msuH,0q-Ogg',
-  database: 'cnbezvte_corpdb',
+  host: process.env.DB_HOST || 'localhost', // Default to localhost if not set
+  user: process.env.DB_USER, // No default recommended for user/password
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME || 'cooperative_db', // Default database name
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306, // Default MySQL port
   waitForConnections: true,
   connectionLimit: 10, // Adjust pool size as needed
   queueLimit: 0,
@@ -16,6 +18,15 @@ let pool: mysql.Pool | null = null;
 
 export function getDbPool() {
   if (!pool) {
+    // Add a check for essential environment variables before creating the pool
+    if (!dbConfig.user || !dbConfig.password || !dbConfig.host || !dbConfig.database) {
+        console.error('Database configuration error: Missing required environment variables (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME).');
+        // Optionally, throw an error to prevent pool creation with incomplete config
+        // throw new Error('Missing required database environment variables.');
+        // Or return null/handle gracefully depending on application needs
+        return null; // Example: return null, adjust as needed
+    }
+
     try {
       pool = mysql.createPool(dbConfig);
       console.log('MySQL connection pool created successfully.');
