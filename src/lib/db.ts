@@ -2,7 +2,7 @@ import mysql from 'mysql2/promise';
 
 // It is recommended to use environment variables for credentials in production
 const dbConfig = {
-  host: '50.6.160.202',
+  host: 'gator4410.hostgator.com',
   user: 'cnbezvte_corpdbuser',
   password: '0msuH,0q-Ogg',
   database: 'cnbezvte_corpdb',
