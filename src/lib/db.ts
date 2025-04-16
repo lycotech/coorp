@@ -2,10 +2,10 @@ import mysql from 'mysql2/promise';
 
 // It is recommended to use environment variables for credentials in production
 const dbConfig = {
-  host: 'localhost',
-  user: 'root',
+  host: 'gator4410.hostgator.com',
+  user: 'cnbezvte_corpdbuser',
   password: '0msuH,0q-Ogg',
-  database: 'cooperative_db',
+  database: 'cnbezvte_corpdb',
   waitForConnections: true,
   connectionLimit: 10, // Adjust pool size as needed
   queueLimit: 0,
@@ -21,7 +21,7 @@ export function getDbPool() {
       console.log('MySQL connection pool created successfully.');
     } catch (error) {
       console.error('Error creating MySQL connection pool:', error);
-      throw error; // Re-throw the error to indicate failure
+      throw error; // Update DBRe-throw the error to indicate failure
     }
   }
   return pool;
