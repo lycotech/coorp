@@ -326,7 +326,7 @@ function ContributionManagerPageContent() {
 
 export default function ContributionManagerPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator', 'President', 'Treasurer']}>
+    <AuthorizationGuard allowedRoles={['Administrator', 'President', 'Treasurer', 'SuperAdmin']}>
       <ContributionManagerPageContent />
     </AuthorizationGuard>
   );

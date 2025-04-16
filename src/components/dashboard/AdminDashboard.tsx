@@ -178,6 +178,8 @@ export default function AdminDashboard() {
     return <div className="text-red-600">Error loading admin dashboard: {error}</div>;
   }
 
+  console.log("AdminDashboard: Rendering UI with fetched data:", data);
+
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-6">Admin Home</h1>

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken'; // Remove jsonwebtoken import
+import { SignJWT } from 'jose'; // Import SignJWT from jose
 // import { cookies } from 'next/headers'; // No longer needed here
 import mysql from 'mysql2/promise'; // Import for types
 
@@ -73,9 +74,16 @@ export async function POST(request: NextRequest) {
       type: user.login_type
     };
 
-    const token = jwt.sign(tokenPayload, jwtSecret, {
-      expiresIn: '1h', // Token expiry time (e.g., 1 hour)
-    });
+    // Generate JWT using jose
+    const secret = new TextEncoder().encode(jwtSecret);
+    const alg = 'HS256'; // Define the algorithm
+
+    const token = await new SignJWT(tokenPayload)
+      .setProtectedHeader({ alg })
+      .setIssuedAt()
+      // .setSubject(user.staff_no) // Optional: set subject
+      .setExpirationTime('1h') // Set expiration time
+      .sign(secret);
 
     // Update last_login time (optional)
     await connection.query('UPDATE USERS SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);

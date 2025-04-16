@@ -388,7 +388,7 @@ function ManageUsersPageContent() {
 // Wrap the content component with the guard
 export default function ManageUsersPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator']}>
+    <AuthorizationGuard allowedRoles={['SuperAdmin', 'Administrator']}>
       <ManageUsersPageContent />
     </AuthorizationGuard>
   );

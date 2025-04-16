@@ -2,9 +2,10 @@ import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 import React from "react";
 import { cookies } from 'next/headers'; // Import cookies
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose'; // Import jose
 
-// Interface for the expected JWT payload (align with login route)
+// Interface for the expected JWT payload (align with login route and middleware)
+/* Remove unused interface
 interface DecodedToken {
   userId: number;
   staffNo: string;
@@ -13,6 +14,7 @@ interface DecodedToken {
   iat: number;
   exp: number;
 }
+*/
 
 // Helper function to get user type from cookie
 async function getUserType(): Promise<string | null> {
@@ -23,8 +25,24 @@ async function getUserType(): Promise<string | null> {
     const jwtSecret = process.env.JWT_SECRET;
 
     if (token && jwtSecret) {
-        const decoded = jwt.verify(token, jwtSecret) as DecodedToken;
-        return decoded.type; // Return the user type
+        // const decoded = jwt.verify(token, jwtSecret) as DecodedToken;
+        // Use jose for verification
+        const secret = new TextEncoder().encode(jwtSecret);
+        const { payload } = await jwtVerify(token, secret);
+
+        // Ensure the payload matches the expected structure if needed,
+        // otherwise, directly access the type property.
+        // We assume the payload structure matches what jose returns,
+        // which includes the properties we added during signing.
+        // const userType = (payload as DecodedToken).type;
+        // Access payload properties directly (ensure they exist as expected)
+        const userType = payload.type as string | undefined; // Access directly, cast to string
+
+        if (userType) {
+          return userType; // Return the user type
+        } else {
+          console.error("Layout: 'type' property missing in JWT payload.");
+        }
     } else {
         if (!token) console.log("Layout: No session token found.");
         if (!jwtSecret) console.error("Layout: JWT_SECRET not set.");

@@ -114,7 +114,7 @@ function UploadUserPageContent() {
 
 export default function UploadUserPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator']}>
+    <AuthorizationGuard allowedRoles={['Administrator', 'SuperAdmin']}>
       <UploadUserPageContent />
     </AuthorizationGuard>
   );

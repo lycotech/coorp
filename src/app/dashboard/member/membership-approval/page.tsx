@@ -169,7 +169,7 @@ function MembershipApprovalPageContent() {
 
 export default function MembershipApprovalPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator', 'President']}>
+    <AuthorizationGuard allowedRoles={['President', 'Secretary', 'SuperAdmin']}>
       <MembershipApprovalPageContent />
     </AuthorizationGuard>
   );

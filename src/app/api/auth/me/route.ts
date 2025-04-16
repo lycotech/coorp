@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken'; // Remove jsonwebtoken
+import { jwtVerify } from 'jose'; // Import jose
 import { cookies } from 'next/headers'; // Import cookies from next/headers for Route Handlers
 
-// Interface for the expected JWT payload
+// Interface for the expected JWT payload (align with login route and middleware)
+// We can use jose's JWTPayload and add our custom fields if needed, or just access directly
+/* Remove interface
 interface DecodedToken {
     userId: number;
     staffNo: string;
@@ -11,6 +14,7 @@ interface DecodedToken {
     iat: number;
     exp: number;
 }
+*/
 
 export async function GET() {
     // Await the cookie store before accessing it
@@ -28,23 +32,59 @@ export async function GET() {
     }
 
     try {
-        // Verify the token
-        const decoded = jwt.verify(token, jwtSecret) as DecodedToken;
+        // Verify the token using jose
+        // const decoded = jwt.verify(token, jwtSecret) as DecodedToken;
+        const secret = new TextEncoder().encode(jwtSecret);
+        const { payload } = await jwtVerify(token, secret);
 
         // Return the user data from the token payload
-        // Exclude sensitive or unnecessary info like iat, exp for the client
+        // Access payload properties directly
         const userData = {
-            userId: decoded.userId,
-            staffNo: decoded.staffNo,
-            email: decoded.email,
-            type: decoded.type,
+            userId: payload.userId as number, // Cast based on expected type
+            staffNo: payload.staffNo as string,
+            email: payload.email as string,
+            type: payload.type as string,
         };
+
+        // Basic validation: Check if essential data is present
+        if (!userData.userId || !userData.staffNo || !userData.email || !userData.type) {
+            console.error('/api/auth/me: JWT payload missing expected fields.', payload);
+            return NextResponse.json({ error: 'Internal Server Error: Invalid token payload' }, { status: 500 });
+        }
 
         return NextResponse.json(userData, { status: 200 });
 
     } catch (error) {
-        console.error('Failed to verify token:', error);
+        console.error('Failed to verify token in /api/auth/me:', error);
         // Handle specific errors like token expiry if needed
+        // Jose errors often have a 'code' property (e.g., 'ERR_JWT_EXPIRED')
+        // We can check error.name or error.code if available
+        let status = 500;
+        let message = 'Internal Server Error';
+
+        if (error instanceof Error) {
+            // Check jose error codes for specific handling
+            // Safely check if 'code' property exists and is a string
+            const joseErrorCode = (typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string') ? error.code : undefined;
+
+            if (joseErrorCode === 'ERR_JWT_EXPIRED') {
+                status = 401;
+                message = 'Unauthorized: Token expired';
+                const response = NextResponse.json({ error: message }, { status });
+                response.cookies.delete('sessionToken');
+                return response;
+            } else if (joseErrorCode === 'ERR_JWS_INVALID' || joseErrorCode === 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED' || joseErrorCode === 'ERR_JWT_CLAIM_VALIDATION_FAILED') {
+                 status = 401;
+                 message = 'Unauthorized: Invalid token';
+            } else {
+                 message = error.message; // Use generic error message for other errors
+            }
+        } else {
+            message = 'An unknown error occurred during token verification';
+        }
+
+        return NextResponse.json({ error: message }, { status });
+        /* Old error handling
         if (error instanceof jwt.TokenExpiredError) {
             // Create the response first, then modify cookies
             const response = NextResponse.json({ error: 'Unauthorized: Token expired' }, { status: 401 });
@@ -55,5 +95,6 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
         }
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        */
     }
 } 

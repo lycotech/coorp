@@ -1,39 +1,56 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode'; // Use jwt-decode for client-side decoding
+// import Cookies from 'js-cookie'; // No longer needed
+// import { jwtDecode } from 'jwt-decode'; // No longer needed
 
-interface DecodedToken {
+// Interface matching the structure returned by /api/auth/me
+interface UserData {
     userId: number;
     staffNo: string;
     email: string;
     type: string; // User role (login_type)
-    iat: number;
-    exp: number;
 }
 
 export function useCurrentUser() {
-    const [user, setUser] = useState<DecodedToken | null>(null);
+    const [user, setUser] = useState<UserData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null); // Optional: Add error state
 
     useEffect(() => {
-        const token = Cookies.get('sessionToken');
-        if (token) {
-            try {
-                const decoded = jwtDecode<DecodedToken>(token);
-                setUser(decoded);
-            } catch (error) {
-                console.error("Failed to decode token:", error);
-                // Optionally clear the invalid cookie
-                // Cookies.remove('sessionToken');
-                setUser(null);
-            }
-        } else {
-            setUser(null);
-        }
-        setIsLoading(false);
-    }, []);
+        const fetchUser = async () => {
+            setIsLoading(true);
+            setError(null);
+            setUser(null); // Reset user state initially
 
-    return { user, isLoading };
+            try {
+                const response = await fetch('/api/auth/me');
+
+                if (response.status === 401) {
+                    // Unauthorized (handled by API, session likely invalid/expired)
+                    console.log("useCurrentUser: Not logged in or session expired (401).");
+                    // User remains null
+                } else if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
+                    throw new Error(errorData.error || 'Failed to fetch user data');
+                } else {
+                    // Successful fetch
+                    const userData: UserData = await response.json();
+                    setUser(userData);
+                }
+            } catch (err) {
+                console.error("useCurrentUser hook error:", err);
+                setError(err instanceof Error ? err.message : "An unknown error occurred");
+                // User remains null
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUser();
+
+    }, []); // Empty dependency array ensures this runs once on mount
+
+    // Return error state as well if needed by consumers
+    return { user, isLoading, error };
 } 

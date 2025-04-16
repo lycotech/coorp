@@ -340,7 +340,7 @@ function LoanManagerPageContent() {
 
 export default function LoanManagerPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator', 'President']}>
+    <AuthorizationGuard allowedRoles={['Administrator', 'President', 'Treasurer', 'SuperAdmin']}>
       <LoanManagerPageContent />
     </AuthorizationGuard>
   );

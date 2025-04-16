@@ -504,7 +504,7 @@ function TransactionPostPageContent() {
 
 export default function TransactionPostPage() {
   return (
-    <AuthorizationGuard allowedRoles={['Administrator', 'President', 'Treasurer']}>
+    <AuthorizationGuard allowedRoles={['Treasurer', 'President', 'SuperAdmin']}>
       <TransactionPostPageContent />
     </AuthorizationGuard>
   );
