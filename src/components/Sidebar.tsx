@@ -73,13 +73,21 @@ const memberMenu: MenuItem[] = [
     ]
   },
   { name: "Transaction Details", href: "/dashboard/member-transactions", icon: FileText },
-  { name: "Contributions", href: "/dashboard/member-contributions", icon: CreditCard },
+  {
+    name: "Contributions",
+    href: "#",
+    icon: CreditCard,
+    subItems: [
+      { name: "Monthly Contribution", href: "/dashboard/personal/contribution-change", icon: CreditCard },
+      { name: "Contribution History", href: "/dashboard/member-contributions", icon: FileText },
+    ]
+  },
   {
     name: "Loan",
     href: "#", // Placeholder href for parent
     icon: HandCoins,
     subItems: [
-      { name: "All Loan", href: "/dashboard/loan/all", icon: ReceiptText },
+      { name: "My Loans", href: "/dashboard/personal/loans", icon: ReceiptText },
       { name: "Apply for loan", href: "/dashboard/loan/apply", icon: FileCheck2 },
       { name: "Guarantor", href: "/dashboard/loan/guarantor", icon: ShieldCheck },
     ],
