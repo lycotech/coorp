@@ -64,59 +64,95 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-sm">
-        <form onSubmit={handleSubmit}>
-          <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>
-              Enter your staff number or email below to login.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="identifier">Staff No / Email</Label>
-              <Input
-                id="identifier"
-                type="text"
-                placeholder="M001 / m@example.com"
-                value={identifier}
-                onChange={handleIdentifierChange}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        {/* Logo/Branding Section */}
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+            <div className="text-2xl font-bold text-primary-foreground">C</div>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Corporate Cooperative</h1>
+          <p className="text-muted-foreground text-sm">Sign in to your account</p>
+        </div>
+
+        {/* Login Card */}
+        <Card className="border-border/40 shadow-lg">
+          <form onSubmit={handleSubmit}>
+            <CardHeader className="space-y-1 pb-6">
+              <CardTitle className="text-xl text-center">Welcome Back</CardTitle>
+              <CardDescription className="text-center">
+                Enter your credentials to access your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="identifier" className="text-sm font-medium">Staff No / Email</Label>
+                <Input
+                  id="identifier"
+                  type="text"
+                  placeholder="M001 or member@company.com"
+                  value={identifier}
+                  onChange={handleIdentifierChange}
+                  className="border-border/50 focus:border-primary"
+                  required
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={handlePasswordChange}
-                required
-              />
-              <div className="text-right">
-                <Link href="/forgot-password" className="inline-block text-sm underline">
-                  Forgot your password?
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                  <Link 
+                    href="/forgot-password" 
+                    className="text-xs text-primary hover:text-primary/80 underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  className="border-border/50 focus:border-primary"
+                  required
+                />
+              </div>
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                  {error}
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4 pt-6">
+              <Button 
+                type="submit" 
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  'Sign in'
+                )}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Don&apos;t have an account?{" "}
+                <Link href="/register" className="text-primary hover:text-primary/80 underline font-medium">
+                  Sign up here
                 </Link>
-              </div>
-            </div>
-            {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-          </CardContent>
-          <CardFooter className="flex flex-col items-center">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </Button>
-            <div className="mt-4 text-center text-sm w-full">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="underline">
-                Sign up
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center text-xs text-muted-foreground">
+          © 2024 Corporate Cooperative Management System
+        </div>
+      </div>
     </div>
   );
 } 

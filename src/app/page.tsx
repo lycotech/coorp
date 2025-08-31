@@ -1,6 +1,19 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { getDbPool } from "@/lib/db"; // Import DB pool function
 import mysql from 'mysql2/promise'; // Import mysql types
+import { 
+  Users, 
+  PiggyBank, 
+  HandCoins, 
+  Shield, 
+  TrendingUp, 
+  Clock,
+  CheckCircle,
+  XCircle
+} from "lucide-react";
 
 // Function to test DB connection
 async function checkDbConnection(): Promise<{ connected: boolean; error: string | null }> {
@@ -8,6 +21,9 @@ async function checkDbConnection(): Promise<{ connected: boolean; error: string 
   try {
     console.log("Checking DB connection...");
     const pool = getDbPool();
+    if (!pool) {
+      return { connected: false, error: "Database pool not initialized - check environment variables" };
+    }
     connection = await pool.getConnection();
     // Simple query to test connection
     await connection.query('SELECT 1');
@@ -36,115 +52,171 @@ export default async function Home() {
   const dbStatus = await checkDbConnection();
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      {/* Header/Status Area */}
-      <div className="w-full flex justify-center items-center mb-4 p-4 border-b">
-        <h2 className="text-lg font-semibold mr-4">Database Connection Status:</h2>
-        {dbStatus.connected ? (
-          <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">Connected</span>
-        ) : (
-          <span className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-sm font-medium">Failed</span>
-        )}
-        {dbStatus.error && (
-           <p className="ml-4 text-red-600 text-xs">Error: {dbStatus.error}</p>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Database Status Bar */}
+      <div className="border-b border-border/40 bg-background/95 backdrop-blur">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">System Status:</span>
+              {dbStatus.connected ? (
+                <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Connection Failed
+                </Badge>
+              )}
+            </div>
+            {dbStatus.error && (
+              <span className="text-xs text-muted-foreground truncate max-w-md">
+                Error: {dbStatus.error}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Original Main Content */}
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-16">
+        {/* Hero Section */}
+        <div className="text-center space-y-6 mb-16">
+          <div className="mx-auto w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-6">
+            <div className="text-3xl font-bold text-primary-foreground">C</div>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight">
+            Corporate Cooperative
+            <span className="text-primary block mt-2">Management System</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Streamline your cooperative operations with our comprehensive platform for managing 
+            contributions, loans, and member activities.
+          </p>
+          <div className="flex gap-4 justify-center mt-8">
+            <Link href="/login">
+              <Button size="lg" className="px-8">
+                Login to Your Account
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button variant="outline" size="lg" className="px-8">
+                Register as Member
+              </Button>
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        {/* Features Section */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Member Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Comprehensive member registration, profile management, and status tracking.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <PiggyBank className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Contribution Tracking</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Monitor monthly contributions, savings balance, and financial growth over time.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <HandCoins className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Loan Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Apply for loans, track repayments, and manage loan approvals seamlessly.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Secure Platform</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Advanced security features with role-based access and data protection.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <TrendingUp className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Analytics & Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Detailed financial reports and analytics for informed decision making.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Clock className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Real-time Updates</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Stay updated with real-time notifications and instant status changes.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-primary/5 rounded-2xl p-8 text-center">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            Join our cooperative management platform and streamline your financial operations today.
+          </p>
+          <Link href="/register">
+            <Button size="lg" className="px-8">
+              Create Your Account
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border/40 py-8">
+        <div className="container mx-auto px-4 text-center text-muted-foreground">
+          <p>© 2024 Corporate Cooperative Management System. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );

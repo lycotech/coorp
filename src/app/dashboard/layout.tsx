@@ -66,15 +66,23 @@ export default async function DashboardLayout({
   console.log("Layout: User type retrieved:", userType);
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Pass userType to Sidebar */}
-      <Sidebar userType={userType} />
+    <div className="flex h-screen bg-gradient-to-br from-background via-background to-muted/10">
+      {/* Sidebar with enhanced styling */}
+      <div className="hidden md:flex">
+        <Sidebar userType={userType} />
+      </div>
+      
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* You might want to pass user info to Header too */}
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          {/* Add a header here if needed */}
-          {children}
+        {/* Header with shadow and border */}
+        <div className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <Header />
+        </div>
+        
+        {/* Main content with improved spacing and styling */}
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-background to-muted/5">
+          <div className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
+            {children}
+          </div>
         </main>
       </div>
     </div>

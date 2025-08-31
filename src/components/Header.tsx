@@ -56,30 +56,43 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 dark:bg-muted/20">
-      {/* Optional: Add Search or other header elements here */}
-      <div className="ml-auto flex items-center gap-4">
-        {/* Add Theme Toggle */}
+    <header className="flex h-16 items-center gap-4 px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Page title or breadcrumbs could go here */}
+      <div className="flex items-center gap-2">
+        <div className="text-sm font-medium text-muted-foreground">Dashboard</div>
+      </div>
+      
+      {/* Header actions */}
+      <div className="ml-auto flex items-center gap-3">
+        {/* Theme Toggle with improved styling */}
         <ThemeToggle />
+        
+        {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full border border-border/50 hover:border-border">
               <Avatar className="h-8 w-8">
                 {user.imageUrl && <AvatarImage src={user.imageUrl} alt={user.name} />}
-                <AvatarFallback>{user.initials}</AvatarFallback>
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">{user.initials}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  Corporate Member
+                </p>
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
             </DropdownMenuItem>
-            {/* Add other items like Settings here */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

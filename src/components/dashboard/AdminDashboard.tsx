@@ -26,16 +26,18 @@ interface SummaryCardProps {
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon: Icon, iconColor = 'bg-primary/10' }) => (
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <div className={`p-2 rounded-md ${iconColor}`}>
-         <Icon className="h-4 w-4 text-muted-foreground" />
+  <Card className="relative overflow-hidden">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+      <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+      <div className={`p-2.5 rounded-lg ${iconColor} ring-1 ring-border/5`}>
+         <Icon className="h-4 w-4 text-primary" />
       </div>
     </CardHeader>
     <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-2xl font-bold text-foreground mb-1">{value}</div>
+      <div className="text-xs text-muted-foreground">Updated recently</div>
     </CardContent>
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
   </Card>
 );
 
@@ -47,12 +49,12 @@ interface LoanStatusProps {
 }
 
 const LoanStatus: React.FC<LoanStatusProps> = ({ label, value, percentage }) => (
-  <div className="mb-3">
-    <div className="flex justify-between text-sm mb-1">
-      <span>{`${label} (${value})`}</span>
-      <span>{percentage}%</span>
+  <div className="mb-4">
+    <div className="flex justify-between text-sm mb-2">
+      <span className="font-medium text-foreground">{`${label} (${value})`}</span>
+      <span className="text-muted-foreground">{percentage}%</span>
     </div>
-    <Progress value={percentage} className="h-2" />
+    <Progress value={percentage} className="h-2.5" />
   </div>
 );
 
@@ -181,53 +183,81 @@ export default function AdminDashboard() {
   console.log("AdminDashboard: Rendering UI with fetched data:", data);
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">Admin Home</h1>
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Overview of cooperative activities and member statistics</p>
+        </div>
+      </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {summaryData.map((item, index) => (
-          item ? <SummaryCard key={index} {...item} /> : <Card key={index}><CardContent className="pt-6 h-24 animate-pulse bg-muted rounded-md"></CardContent></Card> // Skeleton
+          item ? (
+            <SummaryCard key={index} {...item} />
+          ) : (
+            <Card key={index} className="animate-pulse">
+              <CardContent className="pt-6 h-24">
+                <div className="bg-muted rounded-md h-full"></div>
+              </CardContent>
+            </Card>
+          )
         ))}
       </div>
 
-      {/* Middle Section: Switch Member & Loan Summary */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-        {/* Switch Member Card */}
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Switch Member & Status Legend */}
         <Card className="lg:col-span-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4 mb-6">
-              <Input placeholder="Staff Number" className="max-w-xs" />
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                Switch to member
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Member Management</CardTitle>
+            <p className="text-sm text-muted-foreground">Switch to member view or check member statuses</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Switch Member Section */}
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <Input 
+                placeholder="Enter Staff Number" 
+                className="max-w-xs bg-background border-border" 
+              />
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+                Switch to Member
               </Button>
             </div>
+            
             {/* Member Status Legend */}
-            <div>
-              {memberStatusLegend.map((item, index) => (
-                <div key={index} className="flex items-center space-x-2 text-sm mb-1">
-                  <span className={`inline-block w-3 h-3 ${item.color}`}></span>
-                  <span>{item.label}</span>
-                </div>
-              ))}
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground">Member Status Legend</h4>
+              <div className="grid grid-cols-2 gap-2">
+                {memberStatusLegend.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <span className={`w-3 h-3 rounded-sm ${item.color}`}></span>
+                    <span className="text-muted-foreground">{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Loan Summary Card */}
         <Card>
-          <CardContent className="pt-6">
-             <LoanStatus label="Total Loan" {...loanSummary.totalLoan} />
-             <LoanStatus label="Total Loan Declined" {...loanSummary.declined} />
-             <LoanStatus label="Total Loan Pending" {...loanSummary.pending} />
-             <LoanStatus label="Total Loan Active" {...loanSummary.active} />
-             <LoanStatus label="Total Members on Loan" {...loanSummary.membersOnLoan} />
-             <LoanStatus label="Total Members without Loan" {...loanSummary.membersWithoutLoan} />
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Loan Overview</CardTitle>
+            <p className="text-sm text-muted-foreground">Current loan statistics</p>
+          </CardHeader>
+          <CardContent>
+             <LoanStatus label="Total Loans" {...loanSummary.totalLoan} />
+             <LoanStatus label="Declined" {...loanSummary.declined} />
+             <LoanStatus label="Pending" {...loanSummary.pending} />
+             <LoanStatus label="Active" {...loanSummary.active} />
+             <LoanStatus label="Members on Loan" {...loanSummary.membersOnLoan} />
+             <LoanStatus label="Members without Loan" {...loanSummary.membersWithoutLoan} />
           </CardContent>
         </Card>
       </div>
-
-      {/* Add other admin-specific components/charts here */}
     </div>
   );
 } 

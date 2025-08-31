@@ -29,17 +29,22 @@ interface BalanceCardProps {
 }
 
 const BalanceCard: React.FC<BalanceCardProps> = ({ title, value, icon: Icon, description, className }) => (
-    <Card className={cn("bg-gray-900 text-white border-gray-700 shadow-lg", className)}> {/* Dark theme card */}
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">{title}</CardTitle>
-            <Icon className="h-5 w-5 text-purple-400" /> {/* Accent icon color */}
+    <Card className={cn("relative overflow-hidden border-border/40 hover:shadow-lg transition-shadow", className)}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+            <div className="p-2.5 rounded-lg bg-primary/10">
+                <Icon className="h-5 w-5 text-primary" />
+            </div>
         </CardHeader>
         <CardContent>
-            <div className="text-3xl font-bold mb-1">{typeof value === 'number' ? formatCurrency(value) : value}</div>
+            <div className="text-3xl font-bold mb-2 text-foreground">
+                {typeof value === 'number' ? formatCurrency(value) : value}
+            </div>
             {description && (
-                <p className="text-xs text-gray-400">{description}</p>
+                <p className="text-sm text-muted-foreground">{description}</p>
             )}
         </CardContent>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
     </Card>
 );
 
@@ -94,11 +99,17 @@ export default function MemberDashboard() {
     }
 
     return (
-        <div>
-            <h1 className="text-2xl font-semibold mb-6">Your Dashboard</h1>
+        <div className="space-y-8">
+            {/* Page Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Member Dashboard</h1>
+                    <p className="text-muted-foreground">Your personal cooperative account overview</p>
+                </div>
+            </div>
 
-            {/* 3-Card Layout */}
-            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3 mb-6">
+            {/* Balance Cards */}
+            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
                 <BalanceCard
                     title="Total Savings Balance"
                     value={formatCurrency(data.savingsBalance)}
@@ -119,9 +130,53 @@ export default function MemberDashboard() {
                 />
             </div>
 
-            {/* Add other member-specific components below */}
-            {/* Example: Recent Transactions List, Quick Actions, etc. */}
-
+            {/* Quick Actions Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+                    <p className="text-sm text-muted-foreground">Access your most used features</p>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="flex items-center gap-3 p-4 border border-border/50 rounded-lg hover:bg-accent transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-primary/10">
+                                <PiggyBank className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-sm">View Contributions</p>
+                                <p className="text-xs text-muted-foreground">History & details</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 border border-border/50 rounded-lg hover:bg-accent transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-primary/10">
+                                <Landmark className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-sm">Apply for Loan</p>
+                                <p className="text-xs text-muted-foreground">New application</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 border border-border/50 rounded-lg hover:bg-accent transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-primary/10">
+                                <Percent className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-sm">View Transactions</p>
+                                <p className="text-xs text-muted-foreground">Payment history</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 border border-border/50 rounded-lg hover:bg-accent transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-primary/10">
+                                <PiggyBank className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-sm">Update Profile</p>
+                                <p className="text-xs text-muted-foreground">Personal details</p>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 } 
