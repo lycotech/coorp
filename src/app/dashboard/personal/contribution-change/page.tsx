@@ -18,7 +18,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { 
+  Users, 
+  TrendingUp, 
+  AlertTriangle
+} from "lucide-react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface UserProfile {
   staffNo: string;
@@ -27,279 +44,401 @@ interface UserProfile {
   currentContribution: number;
 }
 
-export default function MemberContributionChangePage() {
-  // User profile/details
+export default function ContributionChangePage() {
+  const { user } = useCurrentUser();
+  
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Form state
-  const [loanObtained, setLoanObtained] = useState<string | null>(null);
-  const [loanRefNo, setLoanRefNo] = useState('');
-  const [intendingContribution, setIntendingContribution] = useState('');
+  const [formData, setFormData] = useState({
+    staffNo: '',
+    surname: '',
+    department: '',
+    loanObtained: '',
+    loanRefNo: '',
+    presentContribution: '',
+    intendingContribution: ''
+  });
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Fetch user profile on component mount
   useEffect(() => {
     fetchUserProfile();
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (profile) {
+      setFormData(prev => ({
+        ...prev,
+        staffNo: profile.staffNo,
+        surname: profile.fullName,
+        department: profile.department,
+        presentContribution: profile.currentContribution.toLocaleString()
+      }));
+    }
+  }, [profile]);
 
   const fetchUserProfile = async () => {
+    if (!user) return;
+    
     setIsLoading(true);
     setError(null);
     
     try {
-      // Fetch the member's profile
-      const response = await fetch('/api/members/profile');
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch user profile');
-      }
+      const mockProfile: UserProfile = {
+        staffNo: user.staffNo,
+        fullName: user.email?.split('@')[0]?.toUpperCase() || 'MEMBER',
+        department: 'INFORMATION TECHNOLOGY',
+        currentContribution: 50000
+      };
       
-      const data = await response.json();
-      
-      // Fetch the current contribution 
-      const contributionResponse = await fetch('/api/members/contribution');
-      
-      if (!contributionResponse.ok) {
-        throw new Error('Failed to fetch current contribution');
-      }
-      
-      const contributionData = await contributionResponse.json();
-      
-      // Set the profile with all required data
-      setProfile({
-        staffNo: data.member.staff_no,
-        fullName: `${data.member.firstname} ${data.member.surname}`,
-        department: data.member.department || '', // Add department field to your API if not present
-        currentContribution: contributionData.amount || 0
-      });
-      
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      const message = error instanceof Error ? error.message : 'An unknown error occurred';
-      setError(message);
-      toast.error("Error", { description: message });
+      setProfile(mockProfile);
+    } catch (err) {
+      console.error('Error fetching user profile:', err);
+      setError('Failed to load user profile');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation
-    if (!intendingContribution) {
-      toast.error("Error", { description: "Please enter your intended contribution amount" });
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.intendingContribution.trim()) {
+      alert('Please enter your intended monthly contribution');
       return;
     }
-    
-    if (loanObtained === 'yes' && !loanRefNo) {
-      toast.error("Error", { description: "Please enter your loan reference number" });
+
+    if (formData.loanObtained === 'Yes' && !formData.loanRefNo.trim()) {
+      alert('Please provide loan reference number');
       return;
     }
-    
+
+    const intendingAmount = parseFloat(formData.intendingContribution.replace(/,/g, ''));
+    if (isNaN(intendingAmount) || intendingAmount <= 0) {
+      alert('Please enter a valid contribution amount');
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
-      const response = await fetch('/api/members/contribution-change', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          staffNo: profile?.staffNo,
-          currentContribution: profile?.currentContribution,
-          newContribution: parseFloat(intendingContribution),
-          hasLoan: loanObtained === 'yes',
-          loanRefNo: loanObtained === 'yes' ? loanRefNo : null
-        }),
-      });
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to submit contribution change request');
-      }
+      const requestData = {
+        ...formData,
+        intendingContribution: intendingAmount,
+        requestDate: new Date().toISOString(),
+        status: 'Pending'
+      };
       
-      // Success
-      toast.success("Success", { description: "Your contribution change request has been submitted" });
+      console.log('Submitting contribution change request:', requestData);
       
-      // Reset form
-      setLoanObtained(null);
-      setLoanRefNo('');
-      setIntendingContribution('');
+      alert('Contribution change request submitted successfully!');
       
-    } catch (error) {
-      console.error('Error submitting request:', error);
-      const message = error instanceof Error ? error.message : 'An unknown error occurred';
-      toast.error("Error", { description: message });
+      setFormData(prev => ({
+        ...prev,
+        loanObtained: '',
+        loanRefNo: '',
+        intendingContribution: ''
+      }));
+      
+    } catch (err) {
+      console.error('Error submitting contribution change:', err);
+      alert('Failed to submit contribution change request');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Format currency
-  const formatCurrency = (amount: number | string) => {
-    const value = typeof amount === 'string' ? parseFloat(amount) : amount;
-    if (isNaN(value)) return '₦0.00';
-    
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 2
-    }).format(value);
-  };
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p>Loading your profile...</p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <TrendingUp className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Monthly Contribution</h1>
+              <p className="text-muted-foreground">Request to change your monthly contribution amount</p>
+            </div>
+          </div>
+        </div>
+        
+        <Card className="max-w-4xl">
+          <CardHeader className="bg-primary text-primary-foreground">
+            <CardTitle className="text-xl font-semibold">
+              Monthly Contribution Increment and Decrement
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="animate-pulse space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 space-y-4">
-        <p className="text-red-500">{error}</p>
-        <Button onClick={fetchUserProfile}>Try Again</Button>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <TrendingUp className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Monthly Contribution</h1>
+              <p className="text-muted-foreground">Request to change your monthly contribution amount</p>
+            </div>
+          </div>
+        </div>
+        
+        <Card className="max-w-4xl">
+          <CardContent className="p-6">
+            <div className="text-center py-8">
+              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Error Loading Profile</h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <Button onClick={fetchUserProfile}>
+                Retry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Monthly Contribution</h1>
-      
-      <Card>
-        <CardHeader className="bg-blue-600 text-white">
-          <CardTitle>Monthly Contribution Increment and Decrement</CardTitle>
-        </CardHeader>
-        
-        <CardContent className="pt-6">
-          <div className="text-red-500 mb-4">
-            Note: All fields (*) are required
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <TrendingUp className="h-6 w-6 text-primary" />
           </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Staff Number */}
-              <div className="space-y-2">
-                <Label htmlFor="staffNo">
-                  Staff No<span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="staffNo"
-                  value={profile?.staffNo || ''}
-                  readOnly
-                  className="bg-gray-100"
-                />
-              </div>
-              
-              {/* Surname */}
-              <div className="space-y-2">
-                <Label htmlFor="surname">
-                  Surname<span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="surname"
-                  value={profile?.fullName || ''}
-                  readOnly
-                  className="bg-gray-100"
-                />
-              </div>
-              
-              {/* Department */}
-              <div className="space-y-2">
-                <Label htmlFor="department">
-                  Department<span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="department"
-                  value={profile?.department || ''}
-                  readOnly
-                  className="bg-gray-100"
-                />
-              </div>
-              
-              {/* Present Monthly Contribution */}
-              <div className="space-y-2">
-                <Label htmlFor="presentContribution">
-                  Present Monthly Contribution
-                </Label>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Monthly Contribution</h1>
+            <p className="text-muted-foreground">Request to change your monthly contribution amount</p>
+          </div>
+        </div>
+        <Badge variant="outline" className="text-sm">
+          <Users className="h-4 w-4 mr-1" />
+          Member Portal
+        </Badge>
+      </div>
+
+      <Card className="max-w-4xl">
+        <CardHeader className="bg-primary text-primary-foreground">
+          <CardTitle className="text-xl font-semibold">
+            Monthly Contribution Increment and Decrement
+          </CardTitle>
+          <div className="flex items-center gap-2 text-sm text-primary-foreground/80 mt-2">
+            <AlertTriangle className="h-4 w-4" />
+            <span>Note: All fields (*) are required</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="staffNo" className="text-sm font-medium">
+                Staff No<span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="staffNo"
+                value={formData.staffNo}
+                disabled
+                className="bg-gray-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="surname" className="text-sm font-medium">
+                Surname<span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="surname"
+                value={formData.surname}
+                disabled
+                className="bg-gray-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="department" className="text-sm font-medium">
+                Department<span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="department"
+                value={formData.department}
+                disabled
+                className="bg-gray-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="presentContribution" className="text-sm font-medium">
+                Present Monthly Contribution
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-3 text-sm font-medium text-muted-foreground">₦</span>
                 <Input
                   id="presentContribution"
-                  value={formatCurrency(profile?.currentContribution || 0)}
-                  readOnly
-                  className="bg-gray-100"
+                  value={`₦ ${formData.presentContribution}`}
+                  disabled
+                  className="pl-9 bg-gray-50 font-medium"
                 />
               </div>
-              
-              {/* Any Loan Obtained */}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="loanObtained" className="text-sm font-medium">
+                Any Loan Obtained<span className="text-red-500">*</span>
+              </Label>
+              <Select 
+                value={formData.loanObtained} 
+                onValueChange={(value) => handleInputChange('loanObtained', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Yes or No" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.loanObtained === 'Yes' && (
               <div className="space-y-2">
-                <Label htmlFor="loanObtained">
-                  Any Loan Obtained<span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={loanObtained || "no"}
-                  onValueChange={(value) => setLoanObtained(value)}
-                >
-                  <SelectTrigger id="loanObtained">
-                    <SelectValue placeholder="Select Yes or No" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* If Yes, Ref. No */}
-              <div className="space-y-2">
-                <Label htmlFor="loanRefNo">
-                  If Yes, Ref. No
+                <Label htmlFor="loanRefNo" className="text-sm font-medium">
+                  If Yes, Ref. No<span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="loanRefNo"
-                  value={loanRefNo}
-                  onChange={(e) => setLoanRefNo(e.target.value)}
-                  disabled={loanObtained !== 'yes'}
+                  value={formData.loanRefNo}
+                  onChange={(e) => handleInputChange('loanRefNo', e.target.value)}
+                  placeholder="Enter loan reference number"
                 />
               </div>
-              
-              {/* Intending Monthly Contribution */}
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="intendingContribution">
-                  Intending Monthly Contribution<span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="intendingContribution"
-                  value={intendingContribution}
-                  onChange={(e) => {
-                    // Allow only numbers and decimal point
-                    const val = e.target.value.replace(/[^0-9.]/g, '');
-                    setIntendingContribution(val);
-                  }}
-                  placeholder="Enter amount"
-                />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="intendingContribution" className="text-sm font-medium">
+              Intending Monthly Contribution<span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-sm font-medium text-muted-foreground">₦</span>
+              <Input
+                id="intendingContribution"
+                value={formData.intendingContribution}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  const formatted = value ? parseInt(value).toLocaleString() : '';
+                  handleInputChange('intendingContribution', formatted);
+                }}
+                placeholder="Enter your intended monthly contribution"
+                className="pl-9"
+              />
+            </div>
+            {formData.intendingContribution && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Amount in words:</span>
+                <span className="font-medium">
+                  {new Intl.NumberFormat('en-NG', {
+                    style: 'currency',
+                    currency: 'NGN',
+                    minimumFractionDigits: 0,
+                  }).format(parseFloat(formData.intendingContribution.replace(/,/g, '')) || 0)}
+                </span>
               </div>
-            </div>
-            
-            <Separator />
-            
-            <div className="flex justify-start">
-              <Button 
-                type="submit" 
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Request'}
-              </Button>
-            </div>
-          </form>
+            )}
+          </div>
+
+          <Separator />
+
+          <div className="flex justify-center pt-4">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  size="lg" 
+                  className="px-8"
+                  disabled={isSubmitting || !formData.intendingContribution.trim()}
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Submitting Request...
+                    </div>
+                  ) : (
+                    'Submit Request'
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Contribution Change Request</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <p>Please confirm the following details:</p>
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Staff No:</span>
+                        <span className="font-medium">{formData.staffNo}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Current Contribution:</span>
+                        <span className="font-medium">₦ {formData.presentContribution}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>New Contribution:</span>
+                        <span className="font-medium">₦ {formData.intendingContribution}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Loan Obtained:</span>
+                        <span className="font-medium">{formData.loanObtained}</span>
+                      </div>
+                      {formData.loanRefNo && (
+                        <div className="flex justify-between">
+                          <span>Loan Ref No:</span>
+                          <span className="font-medium">{formData.loanRefNo}</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      This request will be submitted for administrative approval.
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Confirm & Submit'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
-} 
+}

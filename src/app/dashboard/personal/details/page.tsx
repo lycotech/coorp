@@ -301,42 +301,55 @@ function ViewUpdateDetailsContent() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="space-y-6">
-        {/* Personal Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Person Information</CardTitle>
+      <div className="space-y-8">
+        {/* Personal Information - Enhanced Card */}
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 rounded-lg bg-blue-500">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              Personal Information
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Your basic profile and contact details</p>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Staff No */}
-              <div className="space-y-1">
-                <Label htmlFor="staff_no">Staff No.</Label>
+              <div className="space-y-2">
+                <Label htmlFor="staff_no" className="text-sm font-medium text-gray-700">Staff No.</Label>
                 <Input
                   id="staff_no"
                   value={profile?.staff_no || ''}
                   disabled
                   readOnly
+                  className="bg-gray-50 border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
               
               {/* First Name */}
-              <div className="space-y-1">
-                <Label htmlFor="first_name">First Name</Label>
+              <div className="space-y-2">
+                <Label htmlFor="first_name" className="text-sm font-medium text-gray-700">First Name *</Label>
                 <Input
                   id="first_name"
                   value={formData.firstname}
                   onChange={(e) => handleInputChange('firstname', e.target.value)}
+                  className="border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  placeholder="Enter your first name"
                 />
               </div>
               
               {/* Last Name */}
-              <div className="space-y-1">
-                <Label htmlFor="last_name">Last Name</Label>
+              <div className="space-y-2">
+                <Label htmlFor="last_name" className="text-sm font-medium text-gray-700">Last Name *</Label>
                 <Input
                   id="last_name"
                   value={formData.surname}
                   onChange={(e) => handleInputChange('surname', e.target.value)}
+                  className="border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  placeholder="Enter your last name"
                 />
               </div>
               
@@ -722,14 +735,27 @@ function ViewUpdateDetailsContent() {
 export default function ViewUpdateDetailsPage() {
   return (
     <AuthorizationGuard allowedRoles={['Member', 'SuperAdmin']}>
-      <div className="space-y-6 p-6">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">View/Update Details</h2>
-          <p className="text-muted-foreground">
-            View and update your personal information, next of kin, and bank details.
-          </p>
+      <div className="space-y-8 p-1">
+        {/* Enhanced Page Header */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl" />
+          <div className="relative p-8 rounded-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                  Personal Details
+                </h2>
+                <p className="text-muted-foreground text-lg mt-2">
+                  Manage your personal information, next of kin, and banking details
+                </p>
+              </div>
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 rounded-xl border border-border/20">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-sm text-muted-foreground">Profile Active</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <Separator />
         <ViewUpdateDetailsContent />
       </div>
     </AuthorizationGuard>

@@ -178,17 +178,48 @@ export default function MemberLoansPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">My Loan Applications</h1>
+    <div className="space-y-8 p-1">
+      {/* Enhanced Page Header */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl" />
+        <div className="relative p-8 rounded-2xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                My Loan Applications
+              </h1>
+              <p className="text-muted-foreground text-lg mt-2">Track and manage all your loan applications and repayments</p>
+            </div>
+            <div className="hidden md:flex items-center gap-3">
+              <Badge variant="secondary" className="px-4 py-2">
+                {loans.length} Total Applications
+              </Badge>
+              <Button 
+                onClick={() => router.push('/dashboard/loan/apply')}
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                Apply for New Loan
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Loan History</CardTitle>
-          <CardDescription>
+      <Card className="border-0 shadow-lg overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="p-2 rounded-lg bg-blue-500">
+              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              </svg>
+            </div>
+            Loan History
+          </CardTitle>
+          <CardDescription className="text-base">
             View all your loan applications and their current status
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {/* Filters and Search */}
           <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
             <div className="flex items-center space-x-2">

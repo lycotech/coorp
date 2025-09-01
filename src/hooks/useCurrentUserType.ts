@@ -7,6 +7,7 @@ interface UserData {
     staffNo: string;
     email: string;
     type: string; // User role (login_type)
+    phone?: string; // Optional phone number
 }
 
 export function useCurrentUserType() {
