@@ -19,6 +19,7 @@
   --accent: #f1f5f9; /* Slate 100 - Light accent */
   --accent-foreground: #0f172a; /* Slate 900 */
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff; /* White text on destructive background */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -53,6 +54,7 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -99,6 +101,38 @@
     animation: shimmer 2s linear infinite;
     background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
     background-size: 200px 100%;
+  }
+
+  /* Custom gradient utilities for better Tailwind v3 compatibility */
+  .bg-gradient-emerald {
+    background: #10b981; /* Fallback solid color */
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  
+  .bg-gradient-blue {
+    background: #3b82f6; /* Fallback solid color */
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+  
+  .bg-gradient-purple {
+    background: #8b5cf6; /* Fallback solid color */
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+  
+  .bg-gradient-orange {
+    background: #f59e0b; /* Fallback solid color */
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  /* Layout gradient utilities */
+  .bg-gradient-main {
+    background: hsl(var(--background)); /* Fallback solid color */
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--background)), hsl(var(--muted) / 0.1));
+  }
+  
+  .bg-gradient-content {
+    background: hsl(var(--background)); /* Fallback solid color */
+    background: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted) / 0.05));
   }
 }
 

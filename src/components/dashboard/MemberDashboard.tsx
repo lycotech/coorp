@@ -187,7 +187,7 @@ export default function MemberDashboard() {
                     description="Your accumulated contributions"
                     change="+12.5% this month"
                     changeType="positive"
-                    gradient="bg-gradient-to-br from-green-500 to-green-600"
+                    gradient="bg-gradient-emerald"
                     iconBg="bg-green-700/30"
                 />
                 <BalanceCard
@@ -197,7 +197,7 @@ export default function MemberDashboard() {
                     description="Remaining balance on active loans"
                     change="-₦5,000 this month"
                     changeType="positive"
-                    gradient="bg-gradient-to-br from-blue-500 to-blue-600"
+                    gradient="bg-gradient-blue"
                     iconBg="bg-blue-700/30"
                 />
                 <BalanceCard
@@ -207,7 +207,7 @@ export default function MemberDashboard() {
                     description="Your current monthly contribution"
                     change="Consistent"
                     changeType="neutral"
-                    gradient="bg-gradient-to-br from-purple-500 to-purple-600"
+                    gradient="bg-gradient-purple"
                     iconBg="bg-purple-700/30"
                 />
             </div>

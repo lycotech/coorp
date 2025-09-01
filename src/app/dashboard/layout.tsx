@@ -70,7 +70,7 @@ export default async function DashboardLayout({
   console.log("Layout: User type retrieved:", userType);
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-background via-background to-muted/10">
+    <div className="flex h-screen bg-gradient-main">
       {/* Sidebar with enhanced styling */}
       <div className="hidden md:flex">
         <Sidebar userType={userType} />
@@ -83,7 +83,7 @@ export default async function DashboardLayout({
         </div>
         
         {/* Main content with improved spacing and styling */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-background to-muted/5">
+        <main className="flex-1 overflow-y-auto bg-gradient-content">
           <div className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
             {children}
           </div>
