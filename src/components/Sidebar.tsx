@@ -171,14 +171,23 @@ export function Sidebar({ userType }: SidebarProps) { // Destructure userType fr
         key={item.name}
         href={item.href}
         className={cn(
-          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-          isSubItem && "pl-0",
+          "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group",
+          isSubItem && "pl-4 py-2 text-sm font-medium",
           isActive
-            ? "bg-primary text-primary-foreground shadow-sm"
-            : "hover:bg-accent hover:text-accent-foreground text-muted-foreground hover:text-foreground"
+            ? isSubItem 
+              ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border-l-4 border-blue-500"
+              : "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+            : isSubItem
+              ? "hover:bg-blue-50 text-gray-600 hover:text-blue-600"
+              : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 text-gray-700 hover:text-blue-600 hover:shadow-md"
         )}
       >
-        <item.icon className="h-4 w-4 flex-shrink-0" />
+        <item.icon className={cn(
+          "h-4 w-4 flex-shrink-0 transition-colors",
+          isActive 
+            ? isSubItem ? "text-blue-600" : "text-white"
+            : "text-gray-600 group-hover:text-blue-600"
+        )} />
         {item.name}
       </Link>
     );
@@ -196,22 +205,22 @@ export function Sidebar({ userType }: SidebarProps) { // Destructure userType fr
   }
 
   return (
-    <aside className="hidden md:flex w-64 flex-col bg-card border-r border-border/40 shadow-sm">
-      {/* Logo/Brand Section */}
-      <div className="flex items-center px-6 py-6 border-b border-border/40">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <LayoutDashboard className="h-4 w-4" />
+    <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-200/50 shadow-lg">
+      {/* Logo/Brand Section with Gradient */}
+      <div className="flex items-center px-6 py-6 border-b border-gray-200/50 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+            <LayoutDashboard className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Coop Portal</h2>
-            <p className="text-xs text-muted-foreground">Management System</p>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Coop Portal</h2>
+            <p className="text-xs text-gray-600 font-medium">Management System</p>
           </div>
         </div>
       </div>
       
-      {/* Navigation */}
-      <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
+      {/* Navigation with Enhanced Colors */}
+      <nav className="flex-1 space-y-2 p-6 overflow-y-auto">
         {filteredMenuItems.map((item) => {
           if (item.subItems && item.subItems.length > 0) {
             const isParentActive = item.subItems.some(sub => sub.href !== '#' && pathname.startsWith(sub.href));
@@ -226,21 +235,28 @@ export function Sidebar({ userType }: SidebarProps) { // Destructure userType fr
                 <CollapsibleTrigger asChild>
                    <button
                       className={cn(
-                        "flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                        "flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group",
                          isParentActive
-                         ? "bg-primary/10 text-primary border border-primary/20"
-                         : "hover:bg-accent hover:text-accent-foreground"
+                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                         : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 text-gray-700 hover:text-blue-600 hover:shadow-md"
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <item.icon className={cn(
+                          "h-5 w-5 flex-shrink-0 transition-colors",
+                          isParentActive ? "text-white" : "text-gray-600 group-hover:text-blue-600"
+                        )} />
                         {item.name}
                       </div>
-                      <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-90")} />
+                      <ChevronRight className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        isOpen && "rotate-90",
+                        isParentActive ? "text-white" : "text-gray-500 group-hover:text-blue-600"
+                      )} />
                    </button>
                 </CollapsibleTrigger>
-                <CollapsibleContent className="mt-1 space-y-1">
-                  <div className="ml-4 border-l border-border/40 pl-4 space-y-1">
+                <CollapsibleContent className="mt-2 space-y-1">
+                  <div className="ml-6 border-l-2 border-gradient-to-b border-blue-200 pl-4 space-y-1">
                     {item.subItems.map((subItem) => renderLink(subItem, true))}
                   </div>
                 </CollapsibleContent>
@@ -253,10 +269,10 @@ export function Sidebar({ userType }: SidebarProps) { // Destructure userType fr
         })}
       </nav>
       
-      {/* Footer/User Info */}
-      <div className="p-4 border-t border-border/40">
-        <div className="text-xs text-muted-foreground">
-          {userType ? `Logged in as: ${userType}` : 'Guest User'}
+      {/* Footer/User Info with Gradient */}
+      <div className="p-6 border-t border-gray-200/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50">
+        <div className="text-sm font-medium text-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          {userType ? `✨ ${userType} Portal` : '👋 Guest User'}
         </div>
       </div>
     </aside>

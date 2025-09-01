@@ -62,40 +62,75 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-sm">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <Card className="w-full max-w-md border-0 shadow-2xl bg-white/90 backdrop-blur-md relative z-10">
         <form onSubmit={handleSubmit}>
-          <CardHeader>
-            <CardTitle className="text-2xl">Forgot Password</CardTitle>
-            <CardDescription>
-              Enter your email address or staff number and we will send you a link to reset your password.
+          <CardHeader className="text-center space-y-4 pb-8">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+              <div className="text-2xl">🔑</div>
+            </div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Forgot Password?
+            </CardTitle>
+            <CardDescription className="text-gray-600 text-base leading-relaxed">
+              No worries! 💜 Enter your email or staff number and we'll send you a secure link to reset your password.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="identifier">Email / Staff Number</Label>
+          <CardContent className="space-y-6 px-8">
+            <div className="space-y-3">
+              <Label htmlFor="identifier" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                📧 Email / Staff Number
+              </Label>
               <Input
                 id="identifier"
                 type="text"
                 placeholder="m@example.com or M001"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
+                className="border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-xl h-12 px-4 transition-all duration-200 bg-white/80"
                 required
                 disabled={isLoading}
               />
             </div>
-            {message && <p className="text-sm text-green-600">{message}</p>}
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {message && (
+              <div className="p-4 text-sm text-emerald-700 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-xl shadow-sm">
+                ✅ {message}
+              </div>
+            )}
+            {error && (
+              <div className="p-4 text-sm text-red-700 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-xl shadow-sm">
+                ❌ {error}
+              </div>
+            )}
           </CardContent>
-          <CardFooter className="flex flex-col items-start gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Send Reset Link'}
+          <CardFooter className="flex flex-col space-y-6 pt-8 px-8">
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-xl transform hover:scale-105 transition-all duration-200 border-0 rounded-xl text-base font-semibold" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Sending reset link...
+                </div>
+              ) : (
+                '🚀 Send Reset Link'
+              )}
             </Button>
-             <div className="text-center text-sm w-full">
+            <div className="text-center p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl w-full">
+              <p className="text-sm text-gray-600">
                 Remembered your password?{" "}
-                <Link href="/login" className="underline">
-                    Sign in
+                <Link href="/login" className="text-indigo-600 hover:text-purple-600 underline font-semibold transition-colors">
+                  🔓 Sign in here
                 </Link>
+              </p>
             </div>
           </CardFooter>
         </form>

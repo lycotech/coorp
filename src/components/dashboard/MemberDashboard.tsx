@@ -7,16 +7,18 @@ import { Button } from "@/components/ui/button";
 import { 
   PiggyBank, 
   Landmark, 
-  Percent, 
   TrendingUp, 
   ArrowUpRight,
   Calendar,
   CreditCard,
-  Users,
-  FileText,
   Settings,
-  ChevronRight,
-  Activity
+  Star,
+  Zap,
+  Trophy,
+  Target,
+  Heart,
+  Gift,
+  Sparkles
 } from 'lucide-react'; 
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
@@ -38,7 +40,7 @@ const formatCurrency = (value: number | null | undefined): string => {
     return `₦${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-// Enhanced Balance Card Component with gradients and animations
+// Vibrant Balance Card Component with modern gradients
 interface BalanceCardProps {
     title: string;
     value: string | number;
@@ -47,7 +49,7 @@ interface BalanceCardProps {
     change?: string;
     changeType?: 'positive' | 'negative' | 'neutral';
     gradient: string;
-    iconBg: string;
+    iconColor: string;
 }
 
 const BalanceCard: React.FC<BalanceCardProps> = ({ 
@@ -58,15 +60,15 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   change, 
   changeType = 'neutral',
   gradient,
-  iconBg
+  iconColor
 }) => (
     <Card className={cn(
-      "relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group",
+      "relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group cursor-pointer",
       gradient
     )}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-medium text-white/90">{title}</CardTitle>
-            <div className={cn("p-3 rounded-xl shadow-lg", iconBg)}>
+            <div className={cn("p-3 rounded-full shadow-md", iconColor)}>
                 <Icon className="h-5 w-5 text-white" />
             </div>
         </CardHeader>
@@ -80,21 +82,51 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
                 )}
                 {change && (
                     <Badge variant="secondary" className={cn(
-                      "text-xs",
-                      changeType === 'positive' && "bg-green-500/20 text-green-300 border-green-500/30",
-                      changeType === 'negative' && "bg-red-500/20 text-red-300 border-red-500/30",
-                      changeType === 'neutral' && "bg-white/20 text-white/80 border-white/30"
+                      "text-xs border-0 shadow-sm",
+                      changeType === 'positive' && "bg-emerald-500/20 text-emerald-100",
+                      changeType === 'negative' && "bg-rose-500/20 text-rose-100",
+                      changeType === 'neutral' && "bg-white/20 text-white/90"
                     )}>
                         {change}
                     </Badge>
                 )}
             </div>
         </CardContent>
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-        <div className="absolute -bottom-4 -right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Icon className="h-24 w-24" />
+        {/* Decorative elements */}
+        <div className="absolute top-4 right-4 opacity-10">
+            <Icon className="h-16 w-16" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
     </Card>
+);
+
+// Action Card Component
+interface ActionCardProps {
+    title: string;
+    description: string;
+    icon: React.ElementType;
+    href: string;
+    color: string;
+    bgColor: string;
+}
+
+const ActionCard: React.FC<ActionCardProps> = ({ title, description, icon: Icon, href, color, bgColor }) => (
+    <Link href={href}>
+        <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-102 group cursor-pointer bg-white">
+            <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                    <div className={cn("p-3 rounded-xl", bgColor)}>
+                        <Icon className={cn("h-6 w-6", color)} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{title}</h3>
+                        <p className="text-sm text-gray-600 mt-1">{description}</p>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-gray-400 group-hover:text-primary transition-colors" />
+                </div>
+            </CardContent>
+        </Card>
+    </Link>
 );
 
 export default function MemberDashboard() {
@@ -152,25 +184,25 @@ export default function MemberDashboard() {
     }
 
     return (
-        <div className="space-y-8 p-1">
-            {/* Enhanced Page Header with Member Stats */}
+        <div className="space-y-8">
+            {/* Welcome Header with Stats */}
             <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl" />
-                <div className="relative p-8 rounded-2xl">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5 rounded-3xl"></div>
+                <div className="relative p-8 rounded-3xl">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                                Member Dashboard
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Welcome Back! 👋
                             </h1>
-                            <p className="text-muted-foreground text-lg mt-2">Welcome back! Here's your cooperative account overview</p>
+                            <p className="text-gray-600 text-lg mt-2">Here's your cooperative journey at a glance</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="px-4 py-2 text-sm">
+                            <Badge variant="outline" className="px-4 py-2 text-sm border-blue-200 text-blue-700">
                                 <Calendar className="h-4 w-4 mr-2" />
                                 Member since {data.memberSince ? new Date(data.memberSince).getFullYear() : 'N/A'}
                             </Badge>
-                            <Badge variant="secondary" className="px-4 py-2 text-sm bg-green-100 text-green-800 border-green-200">
-                                <TrendingUp className="h-4 w-4 mr-2" />
+                            <Badge className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-green-500 text-white">
+                                <Trophy className="h-4 w-4 mr-2" />
                                 {data.contributionStreak} months streak
                             </Badge>
                         </div>
@@ -178,160 +210,161 @@ export default function MemberDashboard() {
                 </div>
             </div>
 
-            {/* Enhanced Balance Cards with Gradients */}
-            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+            {/* Balance Cards with Vibrant Gradients */}
+            <div className="grid gap-6 md:grid-cols-3">
                 <BalanceCard
-                    title="Total Savings Balance"
+                    title="💰 Savings Balance"
                     value={formatCurrency(data.savingsBalance)}
                     icon={PiggyBank}
-                    description="Your accumulated contributions"
+                    description="Your total savings"
                     change="+12.5% this month"
                     changeType="positive"
-                    gradient="bg-gradient-emerald"
-                    iconBg="bg-green-700/30"
+                    gradient="bg-gradient-to-br from-emerald-500 to-green-600"
+                    iconColor="bg-emerald-600/20"
                 />
                 <BalanceCard
-                    title="Outstanding Loan Balance"
+                    title="🏦 Active Loans"
                     value={formatCurrency(data.loanBalance)}
                     icon={Landmark}
-                    description="Remaining balance on active loans"
-                    change="-₦5,000 this month"
+                    description="Outstanding balance"
+                    change="-₦5,000 paid"
                     changeType="positive"
-                    gradient="bg-gradient-blue"
-                    iconBg="bg-blue-700/30"
+                    gradient="bg-gradient-to-br from-blue-500 to-indigo-600"
+                    iconColor="bg-blue-600/20"
                 />
                 <BalanceCard
-                    title="Monthly Contribution"
+                    title="📈 Monthly Goal"
                     value={formatCurrency(data.monthlyContribution)}
-                    icon={TrendingUp}
-                    description="Your current monthly contribution"
-                    change="Consistent"
+                    icon={Target}
+                    description="Your contribution target"
+                    change="On track"
                     changeType="neutral"
-                    gradient="bg-gradient-purple"
-                    iconBg="bg-purple-700/30"
+                    gradient="bg-gradient-to-br from-purple-500 to-pink-600"
+                    iconColor="bg-purple-600/20"
                 />
             </div>
 
-            {/* Quick Actions Section - Enhanced */}
+            {/* Quick Actions - Fun and Colorful */}
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
-                    <Card className="border-0 shadow-lg">
-                        <CardHeader className="pb-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                                        <Activity className="h-5 w-5 text-primary" />
-                                        Quick Actions
-                                    </CardTitle>
-                                    <p className="text-sm text-muted-foreground mt-1">Access your most used features</p>
+                    <Card className="border-0 shadow-lg bg-white">
+                        <CardHeader className="pb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gradient-to-r from-orange-400 to-pink-400">
+                                    <Zap className="h-5 w-5 text-white" />
                                 </div>
-                                <Button variant="ghost" size="sm">
-                                    View All
-                                    <ArrowUpRight className="h-4 w-4 ml-1" />
-                                </Button>
+                                <div>
+                                    <CardTitle className="text-xl font-bold text-gray-900">Quick Actions</CardTitle>
+                                    <p className="text-gray-600">Get things done faster</p>
+                                </div>
                             </div>
                         </CardHeader>
                         <CardContent>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <Link href="/dashboard/member-contributions">
-                                    <div className="group flex items-center gap-4 p-4 border border-border/50 rounded-xl hover:bg-accent/50 transition-all duration-200 hover:scale-[1.02] hover:shadow-md cursor-pointer">
-                                        <div className="p-3 rounded-lg bg-green-100 group-hover:bg-green-200 transition-colors">
-                                            <PiggyBank className="h-5 w-5 text-green-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-sm">View Contributions</p>
-                                            <p className="text-xs text-muted-foreground">History & monthly details</p>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    </div>
-                                </Link>
-                                
-                                <Link href="/dashboard/loan/apply">
-                                    <div className="group flex items-center gap-4 p-4 border border-border/50 rounded-xl hover:bg-accent/50 transition-all duration-200 hover:scale-[1.02] hover:shadow-md cursor-pointer">
-                                        <div className="p-3 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                                            <Landmark className="h-5 w-5 text-blue-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-sm">Apply for Loan</p>
-                                            <p className="text-xs text-muted-foreground">Submit new application</p>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    </div>
-                                </Link>
-                                
-                                <Link href="/dashboard/member-transactions">
-                                    <div className="group flex items-center gap-4 p-4 border border-border/50 rounded-xl hover:bg-accent/50 transition-all duration-200 hover:scale-[1.02] hover:shadow-md cursor-pointer">
-                                        <div className="p-3 rounded-lg bg-purple-100 group-hover:bg-purple-200 transition-colors">
-                                            <CreditCard className="h-5 w-5 text-purple-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-sm">Transaction History</p>
-                                            <p className="text-xs text-muted-foreground">View payment records</p>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    </div>
-                                </Link>
-                                
-                                <Link href="/dashboard/personal/details">
-                                    <div className="group flex items-center gap-4 p-4 border border-border/50 rounded-xl hover:bg-accent/50 transition-all duration-200 hover:scale-[1.02] hover:shadow-md cursor-pointer">
-                                        <div className="p-3 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                                            <Settings className="h-5 w-5 text-orange-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-sm">Update Profile</p>
-                                            <p className="text-xs text-muted-foreground">Personal information</p>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    </div>
-                                </Link>
+                                <ActionCard
+                                    title="View Contributions"
+                                    description="Check your savings history"
+                                    icon={PiggyBank}
+                                    href="/dashboard/member-contributions"
+                                    color="text-emerald-600"
+                                    bgColor="bg-emerald-50"
+                                />
+                                <ActionCard
+                                    title="Apply for Loan"
+                                    description="Quick loan application"
+                                    icon={Landmark}
+                                    href="/dashboard/loan"
+                                    color="text-blue-600"
+                                    bgColor="bg-blue-50"
+                                />
+                                <ActionCard
+                                    title="Transaction History"
+                                    description="View all transactions"
+                                    icon={CreditCard}
+                                    href="/dashboard/transactions"
+                                    color="text-purple-600"
+                                    bgColor="bg-purple-50"
+                                />
+                                <ActionCard
+                                    title="Update Profile"
+                                    description="Manage your information"
+                                    icon={Settings}
+                                    href="/dashboard/personal/details"
+                                    color="text-orange-600"
+                                    bgColor="bg-orange-50"
+                                />
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Recent Activity Sidebar */}
-                <Card className="border-0 shadow-lg">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-primary" />
-                            Recent Activity
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-green-100">
-                                    <PiggyBank className="h-4 w-4 text-green-600" />
+                {/* Member Achievements & Activity */}
+                <div className="space-y-6">
+                    <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <Star className="h-5 w-5 text-yellow-500" />
+                                Achievements
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-full bg-yellow-100">
+                                        <Trophy className="h-4 w-4 text-yellow-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Consistent Saver</p>
+                                        <p className="text-xs text-gray-600">18 months streak</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium">Monthly contribution</p>
-                                    <p className="text-xs text-muted-foreground">3 days ago</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-full bg-pink-100">
+                                        <Heart className="h-4 w-4 text-pink-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Community Helper</p>
+                                        <p className="text-xs text-gray-600">Active member</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-full bg-blue-100">
+                                        <Gift className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Goal Crusher</p>
+                                        <p className="text-xs text-gray-600">Target achieved</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-blue-100">
-                                    <Landmark className="h-4 w-4 text-blue-600" />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <Sparkles className="h-5 w-5 text-blue-500" />
+                                Recent Activity
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3 text-sm">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                    <span>Monthly contribution received</span>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium">Loan repayment</p>
-                                    <p className="text-xs text-muted-foreground">1 week ago</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <span>Loan payment processed</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                    <span>Profile updated successfully</span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-orange-100">
-                                    <Settings className="h-4 w-4 text-orange-600" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">Profile updated</p>
-                                    <p className="text-xs text-muted-foreground">2 weeks ago</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" className="w-full mt-4">
-                            View All Activity
-                        </Button>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );

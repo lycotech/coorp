@@ -70,21 +70,21 @@ export default async function DashboardLayout({
   console.log("Layout: User type retrieved:", userType);
 
   return (
-    <div className="flex h-screen bg-gradient-main">
+    <div className="flex h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Sidebar with enhanced styling */}
       <div className="hidden md:flex">
         <Sidebar userType={userType} />
       </div>
       
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Header with shadow and border */}
-        <div className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {/* Header with gradient border */}
+        <div className="border-b border-gradient-to-r from-blue-200 to-purple-200 bg-white/80 backdrop-blur-sm shadow-sm">
           <Header />
         </div>
         
-        {/* Main content with improved spacing and styling */}
-        <main className="flex-1 overflow-y-auto bg-gradient-content">
-          <div className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
+        {/* Main content with vibrant background */}
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-transparent to-blue-50/30">
+          <div className="container mx-auto px-6 py-8 space-y-8 max-w-7xl">
             {children}
           </div>
         </main>

@@ -56,45 +56,59 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-16 items-center gap-4 px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Page title or breadcrumbs could go here */}
-      <div className="flex items-center gap-2">
-        <div className="text-sm font-medium text-muted-foreground">Dashboard</div>
+    <header className="flex h-16 items-center gap-4 px-6 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-b border-gray-200/50 shadow-sm">
+      {/* Page title with vibrant styling */}
+      <div className="flex items-center gap-3">
+        <div className="w-2 h-8 rounded-full bg-gradient-to-b from-blue-500 to-purple-500"></div>
+        <div>
+          <div className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Dashboard</div>
+          <div className="text-xs text-gray-500">Cooperative Management</div>
+        </div>
       </div>
       
       {/* Header actions */}
-      <div className="ml-auto flex items-center gap-3">
-        {/* Theme Toggle with improved styling */}
-        <ThemeToggle />
+      <div className="ml-auto flex items-center gap-4">
+        {/* Theme Toggle with vibrant styling */}
+        <div className="p-2 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50">
+          <ThemeToggle />
+        </div>
         
-        {/* User menu */}
+        {/* User menu with enhanced avatar */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full border border-border/50 hover:border-border">
-              <Avatar className="h-8 w-8">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-transparent bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:border-blue-200 transition-all duration-200">
+              <Avatar className="h-9 w-9">
                 {user.imageUrl && <AvatarImage src={user.imageUrl} alt={user.name} />}
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">{user.initials}</AvatarFallback>
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm font-bold">{user.initials}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  Corporate Member
-                </p>
+          <DropdownMenuContent align="end" className="w-64 p-2 shadow-lg border border-gray-100">
+            <DropdownMenuLabel className="font-normal p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  {user.imageUrl && <AvatarImage src={user.imageUrl} alt={user.name} />}
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-xs font-bold">{user.initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                  <p className="text-xs text-blue-600 font-medium">Corporate Member</p>
+                </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+            <DropdownMenuItem className="cursor-pointer py-3 px-3 rounded-md hover:bg-blue-50 transition-colors">
+                <div className="p-2 rounded-lg bg-blue-100 mr-3">
+                  <User className="h-4 w-4 text-blue-600" />
+                </div>
+                <span className="font-medium">Profile Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive hover:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer py-3 px-3 rounded-md hover:bg-red-50 transition-colors text-red-600 hover:text-red-700">
+              <div className="p-2 rounded-lg bg-red-100 mr-3">
+                <LogOut className="h-4 w-4 text-red-600" />
+              </div>
+              <span className="font-medium">Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
