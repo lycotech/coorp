@@ -4,6 +4,10 @@ import React from "react";
 import { cookies } from 'next/headers'; // Import cookies
 import { jwtVerify } from 'jose'; // Import jose
 
+// Force dynamic rendering for all dashboard pages
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Interface for the expected JWT payload (align with login route and middleware)
 /* Remove unused interface
 interface DecodedToken {
