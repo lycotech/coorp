@@ -219,14 +219,24 @@ function TransactionPostPageContent() {
         });
     }, [pendingTransactions]);
 
-    // Placeholder Handlers for Approve/Reject
+    // Handlers for Approve/Reject
     const handleApproveBatch = async (batchId: string) => {
         setActionLoading(prev => ({ ...prev, [batchId]: true }));
         console.log("Approving Transaction Batch:", batchId);
         try {
-            // TODO: Implement API call: POST /api/transactions/batches/approve
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.success("Batch Approved (Simulated)", { description: `Batch ${batchId} marked for approval.` });
+            const response = await fetch('/api/transactions/batches/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batchId }),
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to approve batch');
+            }
+            
+            toast.success("Batch Approved Successfully", { description: `Batch ${batchId} has been approved and processed.` });
             fetchPendingTransactions(); // Refresh list
         } catch (error) {
             const message = error instanceof Error ? error.message : "Failed to approve batch";
@@ -239,10 +249,27 @@ function TransactionPostPageContent() {
     const handleRejectBatch = async (batchId: string) => {
         setActionLoading(prev => ({ ...prev, [batchId]: true }));
         console.log("Rejecting Transaction Batch:", batchId);
+        
+        const rejectionReason = prompt("Please provide a reason for rejection:");
+        if (!rejectionReason) {
+            setActionLoading(prev => ({ ...prev, [batchId]: false }));
+            return;
+        }
+        
         try {
-            // TODO: Implement API call: POST /api/transactions/batches/reject
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.info("Batch Rejected (Simulated)", { description: `Batch ${batchId} marked as rejected.` });
+            const response = await fetch('/api/transactions/batches/reject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batchId, rejectionReason }),
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to reject batch');
+            }
+            
+            toast.info("Batch Rejected Successfully", { description: `Batch ${batchId} has been rejected.` });
             fetchPendingTransactions(); // Refresh list
         } catch (error) {
             const message = error instanceof Error ? error.message : "Failed to reject batch";
@@ -397,9 +424,13 @@ function TransactionPostPageContent() {
                     <div>
                         <Label className="text-base font-medium">Multiple Post - Pending Approval</Label>
                          {/* Template Download Link */}
-                        <div className="my-2">
-                            <Link href="/transaction_upload_template.xlsx" download className="text-sm text-blue-600 hover:underline inline-flex items-center">
-                                <Download className="h-4 w-4 mr-1" />
+                        <div className="my-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Download className="h-5 w-5 text-purple-600" />
+                                <span className="text-sm font-semibold text-gray-700">📄 Transaction Template</span>
+                            </div>
+                            <Link href="/api/templates/transaction" download className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-lg font-medium shadow-md transform hover:scale-105 transition-all duration-200">
+                                <Download className="h-4 w-4" />
                                 Download Sample Upload Template (.xlsx)
                             </Link>
                         </div>

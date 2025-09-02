@@ -18,11 +18,10 @@ interface MemberBalance {
 
 export async function GET(
     request: NextRequest,
-    context // Remove type annotation entirely
+    context: { params: Promise<{ staffNo: string }> }
 ) {
-    // Assume context has params based on file structure
-    const { params } = context; // Destructure params
-    const staffNo = params.staffNo;
+    // Await params before accessing properties
+    const { staffNo } = await context.params;
     let connection: mysql.PoolConnection | null = null;
 
     if (!staffNo) {
@@ -31,6 +30,9 @@ export async function GET(
 
     try {
         const pool = getDbPool();
+        if (!pool) {
+            return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+        }
         connection = await pool.getConnection();
 
         // 1. Fetch member's reg_no using staff_no

@@ -156,14 +156,24 @@ function LoanManagerPageContent() {
 
   }, [pendingLoans]);
 
-  // Placeholder Handlers for Approve/Reject
+  // Handlers for Approve/Reject
   const handleApproveBatch = async (batchId: string) => {
     setActionLoading(prev => ({ ...prev, [batchId]: true }));
     console.log("Approving Batch:", batchId);
     try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+        const response = await fetch('/api/loans/batches/approve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batchId }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to approve batch');
+        }
 
-        toast.success("Batch Approved (Simulated)", { description: `Batch ${batchId} marked for approval.` });
+        toast.success("Batch Approved Successfully", { description: `Batch ${batchId} has been approved and processed.` });
         fetchPendingLoans();
     } catch (error) {
         console.error("Approve batch error:", error);
@@ -177,10 +187,27 @@ function LoanManagerPageContent() {
   const handleRejectBatch = async (batchId: string) => {
     setActionLoading(prev => ({ ...prev, [batchId]: true }));
     console.log("Rejecting Batch:", batchId);
+    
+    const rejectionReason = prompt("Please provide a reason for rejection:");
+    if (!rejectionReason) {
+        setActionLoading(prev => ({ ...prev, [batchId]: false }));
+        return;
+    }
+    
     try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+        const response = await fetch('/api/loans/batches/reject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batchId, rejectionReason }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to reject batch');
+        }
 
-        toast.info("Batch Rejected (Simulated)", { description: `Batch ${batchId} marked as rejected.` });
+        toast.info("Batch Rejected Successfully", { description: `Batch ${batchId} has been rejected.` });
         fetchPendingLoans();
     } catch (error) {
         console.error("Reject batch error:", error);
@@ -198,13 +225,17 @@ function LoanManagerPageContent() {
       {/* Upload Section */}
       <Card>
         <CardContent className="pt-6">
-          <div className="mb-4">
+          <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Download className="h-5 w-5 text-emerald-600" />
+              <span className="text-sm font-semibold text-gray-700">🏦 Loan Template</span>
+            </div>
             <Link 
-              href="/loan_upload_template.xlsx" 
+              href="/api/templates/loan" 
               download 
-              className="text-sm text-blue-600 hover:underline inline-flex items-center"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg font-medium shadow-md transform hover:scale-105 transition-all duration-200"
             >
-                <Download className="h-4 w-4 mr-1" />
+                <Download className="h-4 w-4" />
                 Download Sample Upload Template (.xlsx)
             </Link>
           </div>

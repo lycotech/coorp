@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
 import mysql from 'mysql2/promise';
 
 // Define the structure of the data expected from TEMP_CONTRIBUTIONS
@@ -27,6 +28,9 @@ export async function POST(request: NextRequest) {
     let batchId: string | null = null;
 
     try {
+        // Require authentication
+        const currentUser = await requireAuth(request);
+        
         const body = await request.json();
         batchId = body.batchId;
 
@@ -35,6 +39,10 @@ export async function POST(request: NextRequest) {
         }
 
         const pool = getDbPool();
+        if (!pool) {
+            return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+        }
+        
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
@@ -67,7 +75,7 @@ export async function POST(request: NextRequest) {
             // Just update the batch status to Processed (or Rejected if preferred)
              await connection.query(
                 'UPDATE UPLOAD_BATCHES SET batch_status = ?, approved_by_user_id = ?, approval_date = ? WHERE batch_id = ?',
-                ['Processed', 'system_approve', new Date(), batchId] // TODO: Replace system_approve with actual user ID
+                ['Processed', currentUser.userId, new Date(), batchId] // Use actual user ID
             );
              // Optionally delete invalid entries from temp table if desired
              // await connection.query('DELETE FROM TEMP_CONTRIBUTIONS WHERE upload_batch_id = ?', [batchId]);
@@ -124,7 +132,7 @@ export async function POST(request: NextRequest) {
         // 6. Update Batch Status
         await connection.query(
             'UPDATE UPLOAD_BATCHES SET batch_status = ?, approved_by_user_id = ?, approval_date = ? WHERE batch_id = ?',
-            ['Processed', 'system_approve', new Date(), batchId] // TODO: Replace system_approve with actual user ID
+            ['Processed', currentUser.userId, new Date(), batchId] // Use actual user ID
         );
 
         // 7. Delete processed (valid) contributions from TEMP table

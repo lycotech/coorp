@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { AuthorizationGuard } from '@/components/AuthorizationGuard';
+import { Download } from 'lucide-react';
+import Link from 'next/link';
 
 function UploadUserPageContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -99,10 +101,17 @@ function UploadUserPageContent() {
           {uploadStatus && <p className="text-sm text-green-600">{uploadStatus}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          {/* Optional: Add link to download template */} 
-          {/* <div className="pt-4">
-             <Link href="/path/to/template.xlsx" className="text-sm text-blue-600 hover:underline">Download Template</Link>
-          </div> */} 
+          {/* Template Download Link */} 
+          <div className="pt-6 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Download className="h-5 w-5 text-orange-600" />
+              <span className="text-sm font-semibold text-gray-700">👥 Member Template</span>
+            </div>
+             <Link href="/api/templates/member" download className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white rounded-lg font-medium shadow-md transform hover:scale-105 transition-all duration-200">
+                <Download className="h-4 w-4" />
+                Download Sample Upload Template (.xlsx)
+             </Link>
+          </div> 
         </CardContent>
       </Card>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
 import mysql from 'mysql2/promise';
 
 // Structure for data from TEMP_LOANS
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
     let batchId: string | null = null;
 
     try {
+        // Require authentication
+        const currentUser = await requireAuth(request);
+        
         const body = await request.json();
         batchId = body.batchId;
 
@@ -41,6 +45,10 @@ export async function POST(request: NextRequest) {
         }
 
         const pool = getDbPool();
+        if (!pool) {
+            return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+        }
+        
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
@@ -68,7 +76,7 @@ export async function POST(request: NextRequest) {
         if (loansToProcess.length === 0) {
             await connection.query(
                 'UPDATE UPLOAD_BATCHES SET batch_status = ?, approved_by_user_id = ?, approval_date = ? WHERE batch_id = ?',
-                ['Processed', 'system_approve', new Date(), batchId]
+                ['Processed', currentUser.userId, new Date(), batchId]
             );
             await connection.commit();
             return NextResponse.json({ message: 'Batch had no valid loans to process. Status updated.' }, { status: 200 });
@@ -127,7 +135,7 @@ export async function POST(request: NextRequest) {
         // 5. Update Batch Status to Processed
         await connection.query(
             'UPDATE UPLOAD_BATCHES SET batch_status = ?, approved_by_user_id = ?, approval_date = ? WHERE batch_id = ?',
-            ['Processed', 'system_approve', new Date(), batchId] // TODO: Replace system_approve with actual user ID
+            ['Processed', currentUser.userId, new Date(), batchId] // Use actual user ID
         );
 
         // 6. Delete processed loans from TEMP table

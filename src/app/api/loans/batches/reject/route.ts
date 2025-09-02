@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
 import mysql from 'mysql2/promise';
 
 export async function POST(request: NextRequest) {
@@ -7,15 +8,22 @@ export async function POST(request: NextRequest) {
     let batchId: string | null = null;
 
     try {
+        // Require authentication
+        const currentUser = await requireAuth(request);
+        
         const body = await request.json();
         batchId = body.batchId;
-        const reason = body.reason || 'Rejected by administrator'; // Optional rejection reason
+        const reason = body.rejectionReason || 'Rejected by administrator'; // Optional rejection reason
 
         if (!batchId) {
             return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 });
         }
 
         const pool = getDbPool();
+        if (!pool) {
+            return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+        }
+        
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
@@ -44,7 +52,7 @@ export async function POST(request: NextRequest) {
             [
                 'Rejected',
                 reason,
-                'system_reject', // TODO: Replace with actual rejecting user ID
+                currentUser.userId, // Use actual rejecting user ID
                 new Date(),      // Record rejection time
                 batchId
             ]

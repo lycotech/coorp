@@ -152,14 +152,24 @@ function ContributionManagerPageContent() {
 
   }, [pendingContributions]);
 
-  // Placeholder Handlers for Approve/Reject
+  // Handlers for Approve/Reject
   const handleApproveBatch = async (batchId: string) => {
     setActionLoading(prev => ({ ...prev, [batchId]: true }));
     console.log("Approving Batch:", batchId);
     try {
-        // TODO: Implement API call: POST /api/contributions/batches/approve
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-        toast.success("Batch Approved (Simulated)", { description: `Batch ${batchId} marked for approval.` });
+        const response = await fetch('/api/contributions/batches/approve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batchId }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to approve batch');
+        }
+        
+        toast.success("Batch Approved Successfully", { description: `Batch ${batchId} has been approved and processed.` });
         fetchPendingContributions(); // Refresh list
     } catch (error) {
         console.error("Approve batch error:", error);
@@ -173,11 +183,27 @@ function ContributionManagerPageContent() {
   const handleRejectBatch = async (batchId: string) => {
     setActionLoading(prev => ({ ...prev, [batchId]: true }));
     console.log("Rejecting Batch:", batchId);
-    // TODO: Add reason for rejection input?
+    
+    const rejectionReason = prompt("Please provide a reason for rejection:");
+    if (!rejectionReason) {
+        setActionLoading(prev => ({ ...prev, [batchId]: false }));
+        return;
+    }
+    
     try {
-        // TODO: Implement API call: POST /api/contributions/batches/reject
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-        toast.info("Batch Rejected (Simulated)", { description: `Batch ${batchId} marked as rejected.` });
+        const response = await fetch('/api/contributions/batches/reject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batchId, rejectionReason }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to reject batch');
+        }
+        
+        toast.info("Batch Rejected Successfully", { description: `Batch ${batchId} has been rejected.` });
         fetchPendingContributions(); // Refresh list
     } catch (error) {
         console.error("Reject batch error:", error);
@@ -197,13 +223,17 @@ function ContributionManagerPageContent() {
       <Card>
         <CardContent className="pt-6">
           {/* Updated Template Download Link */}
-          <div className="mb-4">
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Download className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-semibold text-gray-700">📋 Upload Template</span>
+            </div>
             <Link 
-              href="/contribution_upload_template.xlsx" 
+              href="/api/templates/contribution" 
               download 
-              className="text-sm text-blue-600 hover:underline inline-flex items-center"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium shadow-md transform hover:scale-105 transition-all duration-200"
             >
-                <Download className="h-4 w-4 mr-1" />
+                <Download className="h-4 w-4" />
                 Download Sample Upload Template (.xlsx)
             </Link>
           </div>
